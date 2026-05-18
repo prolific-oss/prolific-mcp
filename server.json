@@ -1,0 +1,32 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "name": "io.github.prolific-oss/prolific-mcp",
+  "description": "MCP server bridging LLM agents to the Prolific public API",
+  "repository": {
+    "url": "https://github.com/prolific-oss/prolific-mcp",
+    "source": "github"
+  },
+  "version": "0.0.0",
+  "packages": [
+    {
+      "registry_type": "pypi",
+      "identifier": "prolific-mcp",
+      "version": "0.0.0",
+      "transport": { "type": "stdio" },
+      "environment_variables": [
+        {
+          "name": "PROLIFIC_TOKEN",
+          "description": "Prolific API token (create one at https://app.prolific.com)",
+          "is_required": true,
+          "is_secret": true
+        },
+        {
+          "name": "PROLIFIC_URL",
+          "description": "Override the Prolific API base URL",
+          "is_required": false,
+          "default": "https://api.prolific.com"
+        }
+      ]
+    }
+  ]
+}
