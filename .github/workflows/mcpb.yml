@@ -1,0 +1,85 @@
+name: MCPB
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build-mcpb:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - name: darwin-arm64
+            uv_platform: aarch64-apple-darwin
+          - name: darwin-x86_64
+            uv_platform: x86_64-apple-darwin
+          - name: linux-x86_64
+            uv_platform: x86_64-unknown-linux-gnu
+          - name: windows-x86_64
+            uv_platform: x86_64-pc-windows-msvc
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Python
+        run: uv python install 3.11
+
+      - name: Install mcpb CLI
+        run: npm install -g @anthropic-ai/mcpb
+
+      - name: Build wheel
+        run: uv build --wheel
+
+      - name: Resolve version
+        id: ver
+        run: echo "tag=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Stage MCPB bundle
+        env:
+          TAG: ${{ steps.ver.outputs.tag }}
+          UV_PLATFORM: ${{ matrix.target.uv_platform }}
+        run: |
+          set -euo pipefail
+          bundle="mcpb-build"
+          mkdir -p "$bundle/server"
+
+          jq --arg v "$TAG" '.version = $v' manifest.json > "$bundle/manifest.json"
+
+          cat > "$bundle/server/main.py" <<'PY'
+          from prolific_mcp.__main__ import main
+
+          if __name__ == "__main__":
+              main()
+          PY
+
+          uv pip install \
+            --target "$bundle/server/lib" \
+            --python-version 3.11 \
+            --python-platform "$UV_PLATFORM" \
+            --only-binary=:all: \
+            dist/prolific_mcp-*.whl
+
+      - name: Pack .mcpb
+        env:
+          TAG: ${{ steps.ver.outputs.tag }}
+          NAME: ${{ matrix.target.name }}
+        run: |
+          mcpb pack mcpb-build "prolific-mcp-${TAG}-${NAME}.mcpb"
+
+      - name: Attach to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: prolific-mcp-*.mcpb
