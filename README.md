@@ -46,17 +46,17 @@ The server defaults to stdio and is intended to be launched by an MCP client (Cl
 
 ### Local development (HTTP mode)
 
-Stdio means the client owns the process — you can't see the server's logs in your own terminal. For local iteration, run over streamable HTTP instead:
+Stdio gives the client ownership of the process, which hides server logs. For local iteration, run over streamable HTTP instead so logs stream to your terminal:
 
 ```bash
 PROLIFIC_TOKEN=your_token_here uv run prolific-mcp --http
-# logs stream to your terminal; server listens on http://127.0.0.1:8765/mcp
+# server listens on http://127.0.0.1:8765/mcp
 
-# in another terminal, register it with Claude Code:
+# register it with Claude Code in another terminal:
 claude mcp add prolific --transport http http://127.0.0.1:8765/mcp
 ```
 
-Override host/port with `--host` / `--port` if 8765 is taken.
+Override host/port with `--host` / `--port` if `8765` is in use.
 
 ## Environment variables
 
@@ -65,7 +65,13 @@ Override host/port with `--host` / `--port` if 8765 is taken.
 | `PROLIFIC_TOKEN` | yes | — | Prolific API token, sent as `Authorization: Token …` |
 | `PROLIFIC_URL` | no | `https://api.prolific.com` | Base URL of the Prolific API |
 
-## Claude Desktop configuration
+## Use with MCP clients
+
+### Claude Desktop
+
+Each [GitHub Release](https://github.com/prolific-oss/prolific-mcp/releases) attaches a `.mcpb` bundle per platform (`darwin-arm64`, `darwin-x86_64`, `linux-x86_64`, `windows-x86_64`). Download the file for your platform and open it — Claude Desktop will show an install dialog and prompt for your `PROLIFIC_TOKEN`.
+
+To configure manually instead, add the server to your Claude Desktop config:
 
 ```json
 {
@@ -78,6 +84,33 @@ Override host/port with `--host` / `--port` if 8765 is taken.
   }
 }
 ```
+
+### Claude Code
+
+```bash
+claude mcp add prolific \
+  -e PROLIFIC_TOKEN=your_token_here \
+  -- uvx prolific-mcp
+```
+
+To pin a specific version, replace `uvx prolific-mcp` with `uvx prolific-mcp==<version>`.
+
+### Codex CLI
+
+Add to `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.prolific]
+command = "uvx"
+args = ["prolific-mcp"]
+env = { PROLIFIC_TOKEN = "your_token_here" }
+```
+
+Restart Codex (or start a new session) to pick it up.
+
+### Cursor and other MCP-aware clients
+
+Most clients accept the same `command` / `args` / `env` shape shown in the Claude Desktop JSON above.
 
 ## Development
 

@@ -10,6 +10,7 @@ from prolific_mcp.tools.studies import (
     StudyDraft,
     create_study,
     list_studies,
+    publish_study,
     view_study,
 )
 
