@@ -1,0 +1,55 @@
+{
+  "manifest_version": "0.3",
+  "name": "prolific-mcp",
+  "display_name": "Prolific",
+  "version": "0.0.1",
+  "description": "MCP server bridging LLM agents to the Prolific public API",
+  "long_description": "Exposes Prolific public API endpoints (filters, filter sets, eligibility counts, studies) as MCP tools so an LLM can help researchers design and launch studies on Prolific.",
+  "author": {
+    "name": "Prolific",
+    "url": "https://www.prolific.com"
+  },
+  "homepage": "https://github.com/prolific-oss/prolific-mcp",
+  "documentation": "https://github.com/prolific-oss/prolific-mcp#readme",
+  "support": "https://github.com/prolific-oss/prolific-mcp/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prolific-oss/prolific-mcp"
+  },
+  "license": "MIT",
+  "keywords": ["prolific", "research", "studies", "mcp", "fastmcp"],
+  "server": {
+    "type": "python",
+    "entry_point": "server/main.py",
+    "mcp_config": {
+      "command": "python",
+      "args": ["${__dirname}/server/main.py"],
+      "env": {
+        "PYTHONPATH": "${__dirname}/server/lib",
+        "PROLIFIC_TOKEN": "${user_config.prolific_token}",
+        "PROLIFIC_URL": "${user_config.prolific_url}"
+      }
+    }
+  },
+  "user_config": {
+    "prolific_token": {
+      "type": "string",
+      "title": "Prolific API token",
+      "description": "Create one at https://app.prolific.com",
+      "sensitive": true,
+      "required": true
+    },
+    "prolific_url": {
+      "type": "string",
+      "title": "Prolific API URL",
+      "description": "Override the Prolific API base URL",
+      "required": false,
+      "default": "https://api.prolific.com"
+    }
+  },
+  "compatibility": {
+    "runtimes": {
+      "python": ">=3.11"
+    }
+  }
+}
