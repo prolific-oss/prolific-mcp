@@ -4,7 +4,7 @@ dynamic = ["version"]
 description = "MCP server bridging LLM agents to the Prolific public API"
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = { text = "Apache-2.0" }
 authors = [{ name = "Prolific" }]
 dependencies = [
     "fastmcp>=2.0",

@@ -1,5 +1,6 @@
 # prolific-mcp
 
+[![CI](https://github.com/prolific-oss/prolific-mcp/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/prolific-oss/prolific-mcp/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/prolific-mcp.svg)](https://pypi.org/project/prolific-mcp/)
 [![MCP Registry](https://img.shields.io/badge/MCP%20Registry-listed-blue)](https://registry.modelcontextprotocol.io/v0/servers?search=prolific)
 
