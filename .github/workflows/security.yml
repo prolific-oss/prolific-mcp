@@ -19,13 +19,16 @@ jobs:
       - name: Install Python
         run: uv python install 3.11
 
+      - name: Sync dependencies
+        run: uv sync --frozen
+
       - name: Export resolved dependencies
         run: uv export --format requirements-txt --no-hashes > requirements-snyk.txt
 
       - uses: snyk/actions/setup@master
 
       - name: Snyk Open Source (dependencies)
-        run: snyk test --org=stream --file=requirements-snyk.txt --package-manager=pip --severity-threshold=high --skip-unresolved
+        run: snyk test --org=stream --command=.venv/bin/python --file=requirements-snyk.txt --package-manager=pip --severity-threshold=high --skip-unresolved
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
