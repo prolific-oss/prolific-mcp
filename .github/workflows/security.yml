@@ -25,11 +25,11 @@ jobs:
       - uses: snyk/actions/setup@master
 
       - name: Snyk Open Source (dependencies)
-        run: snyk test --file=requirements-snyk.txt --package-manager=pip --severity-threshold=high --skip-unresolved
+        run: snyk test --org=stream --file=requirements-snyk.txt --package-manager=pip --severity-threshold=high --skip-unresolved
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Snyk Code (SAST)
-        run: snyk code test --severity-threshold=high
+        run: snyk code test --org=stream --severity-threshold=high
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
