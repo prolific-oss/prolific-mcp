@@ -1,0 +1,34 @@
+name: Security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  snyk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Install Python
+        run: uv python install 3.11
+
+      - name: Export resolved dependencies
+        run: uv export --format requirements-txt --no-hashes > requirements-snyk.txt
+
+      - uses: snyk/actions/setup@master
+
+      - name: Snyk Open Source (dependencies)
+        run: snyk test --file=requirements-snyk.txt --package-manager=pip --severity-threshold=high --skip-unresolved
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Snyk Code (SAST)
+        run: snyk code test --severity-threshold=high
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
