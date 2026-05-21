@@ -16,7 +16,7 @@
     "type": "git",
     "url": "https://github.com/prolific-oss/prolific-mcp"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "keywords": ["prolific", "research", "studies", "mcp", "fastmcp"],
   "server": {
     "type": "python",
