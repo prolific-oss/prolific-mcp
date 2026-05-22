@@ -1,7 +1,7 @@
 # prolific-mcp
 
 [![CI](https://github.com/prolific-oss/prolific-mcp/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/prolific-oss/prolific-mcp/actions/workflows/ci.yml)
-[![Security](https://github.com/prolific-oss/prolific-mcp/actions/workflows/security.yml/badge.svg?branch=main)](https://github.com/prolific-oss/prolific-mcp/actions/workflows/security.yml)
+[![Known Vulnerabilities](https://snyk.io/test/github/prolific-oss/prolific-mcp/badge.svg)](https://snyk.io/test/github/prolific-oss/prolific-mcp)
 
 A [Model Context Protocol](https://modelcontextprotocol.io/) server bridging LLM agents to the [Prolific](https://www.prolific.com) public API. Built with [FastMCP](https://gofastmcp.com).
 
