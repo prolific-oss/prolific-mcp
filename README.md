@@ -1,11 +1,14 @@
 # prolific-mcp
 
 [![CI](https://github.com/prolific-oss/prolific-mcp/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/prolific-oss/prolific-mcp/actions/workflows/ci.yml)
-[![Security](https://github.com/prolific-oss/prolific-mcp/actions/workflows/security.yml/badge.svg?branch=main)](https://github.com/prolific-oss/prolific-mcp/actions/workflows/security.yml)
+[![Known Vulnerabilities](https://snyk.io/test/github/prolific-oss/prolific-mcp/badge.svg)](https://snyk.io/test/github/prolific-oss/prolific-mcp)
 
 A [Model Context Protocol](https://modelcontextprotocol.io/) server bridging LLM agents to the [Prolific](https://www.prolific.com) public API. Built with [FastMCP](https://gofastmcp.com).
 
 Listed on the [official MCP Registry](https://registry.modelcontextprotocol.io/v0/servers?search=prolific) — discoverable from Claude Desktop, Cursor, Claude Code, and other MCP-aware clients.
+
+> [!WARNING]
+> **`publish_study` spends real money.** Once a study is published on Prolific, participants can start it immediately and you are charged for their work. Treat any LLM-driven invocation as a real spend: review the study draft and reward before approving the tool call. There is no sandbox mode — the same endpoint is used in production.
 
 ## What it does
 
