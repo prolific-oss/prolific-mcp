@@ -13,7 +13,7 @@ async def test_list_workspaces_hits_endpoint(installed_client: ProlificClient) -
         return_value=httpx.Response(200, json={"results": [{"id": "ws_1"}]})
     )
 
-    result = await list_workspaces()
+    result = await list_workspaces.fn()
 
     assert route.called
     assert result == {"results": [{"id": "ws_1"}]}

@@ -14,7 +14,7 @@ async def test_get_eligibility_count_posts_filters(installed_client: ProlificCli
     )
     filters = [{"filter_id": "current_country_live", "selected_values": ["GB"]}]
 
-    result = await get_eligibility_count(filters=filters)
+    result = await get_eligibility_count.fn(filters=filters)
 
     assert result == {"count": 2034}
     body = route.calls.last.request.content
