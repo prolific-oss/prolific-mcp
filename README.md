@@ -17,6 +17,10 @@ Exposes a small set of tools so an LLM can help a researcher design and launch a
 | `get_filter_sets` | `GET /api/v1/filter-sets/` |
 | `create_filter_set` | `POST /api/v1/filter-sets/` |
 | `get_eligibility_count` | `POST /api/v1/eligibility-count/` |
+| `list_workspaces` | `GET /api/v1/workspaces/` |
+| `list_projects` | `GET /api/v1/workspaces/{workspace_id}/projects/` |
+| `list_studies` | `GET /api/v1/studies/` |
+| `view_study` | `GET /api/v1/studies/{id}/` |
 | `create_study` | `POST /api/v1/studies/` |
 | `publish_study` | `POST /api/v1/studies/{id}/transition/` |
 
