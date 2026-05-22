@@ -36,7 +36,7 @@ async def test_create_study_posts_dump(installed_client: ProlificClient) -> None
         return_value=httpx.Response(201, json={"id": "study_1", "status": "UNPUBLISHED"})
     )
 
-    result = await create_study(study=_draft())
+    result = await create_study.fn(study=_draft())
 
     assert result == {"id": "study_1", "status": "UNPUBLISHED"}
     sent = json.loads(route.calls.last.request.content)
@@ -53,7 +53,7 @@ async def test_list_studies_passes_filter_params(installed_client: ProlificClien
         return_value=httpx.Response(200, json={"results": []})
     )
 
-    await list_studies(state="ACTIVE", page=2, page_size=25, search="memory")
+    await list_studies.fn(state="ACTIVE", page=2, page_size=25, search="memory")
 
     sent = route.calls.last.request
     assert sent.url.params["state"] == "ACTIVE"
@@ -69,7 +69,7 @@ async def test_list_studies_omits_unset_optionals(installed_client: ProlificClie
         return_value=httpx.Response(200, json={"results": []})
     )
 
-    await list_studies()
+    await list_studies.fn()
 
     sent = route.calls.last.request
     assert "state" not in sent.url.params
@@ -85,7 +85,7 @@ async def test_view_study_hits_detail_endpoint(installed_client: ProlificClient)
         return_value=httpx.Response(200, json={"id": "study_42", "status": "ACTIVE"})
     )
 
-    result = await view_study(study_id="study_42")
+    result = await view_study.fn(study_id="study_42")
 
     assert route.called
     assert result == {"id": "study_42", "status": "ACTIVE"}
@@ -98,7 +98,7 @@ async def test_publish_study_calls_transition(installed_client: ProlificClient) 
         return_value=httpx.Response(200, json={"id": "study_1", "status": "ACTIVE"})
     )
 
-    result = await publish_study(study_id="study_1")
+    result = await publish_study.fn(study_id="study_1")
 
     assert result == {"id": "study_1", "status": "ACTIVE"}
     sent = json.loads(route.calls.last.request.content)

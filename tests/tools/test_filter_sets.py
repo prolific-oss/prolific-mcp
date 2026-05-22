@@ -13,7 +13,7 @@ async def test_get_filter_sets_passes_query_params(installed_client: ProlificCli
         return_value=httpx.Response(200, json={"results": []})
     )
 
-    await get_filter_sets(workspace_id="ws_1", limit=50, offset=10)
+    await get_filter_sets.fn(workspace_id="ws_1", limit=50, offset=10)
 
     sent = route.calls.last.request
     assert sent.url.params["workspace_id"] == "ws_1"
@@ -29,7 +29,7 @@ async def test_create_filter_set_posts_payload(installed_client: ProlificClient)
     )
     filters = [{"filter_id": "age", "selected_range": {"lower": 25, "upper": 40}}]
 
-    result = await create_filter_set(
+    result = await create_filter_set.fn(
         workspace_id="ws_1",
         name="UK adults 25-40",
         filters=filters,

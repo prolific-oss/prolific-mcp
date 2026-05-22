@@ -13,7 +13,7 @@ async def test_get_filters_calls_filters_endpoint(installed_client: ProlificClie
         return_value=httpx.Response(200, json=[{"filter_id": "age"}])
     )
 
-    result = await get_filters()
+    result = await get_filters.fn()
 
     assert route.called
     assert result == [{"filter_id": "age"}]
