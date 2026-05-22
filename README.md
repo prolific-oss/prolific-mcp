@@ -7,6 +7,9 @@ A [Model Context Protocol](https://modelcontextprotocol.io/) server bridging LLM
 
 Listed on the [official MCP Registry](https://registry.modelcontextprotocol.io/v0/servers?search=prolific) — discoverable from Claude Desktop, Cursor, Claude Code, and other MCP-aware clients.
 
+> [!WARNING]
+> **`publish_study` spends real money.** Once a study is published on Prolific, participants can start it immediately and you are charged for their work. Treat any LLM-driven invocation as a real spend: review the study draft and reward before approving the tool call. There is no sandbox mode — the same endpoint is used in production.
+
 ## What it does
 
 Exposes a small set of tools so an LLM can help a researcher design and launch a study on Prolific:
