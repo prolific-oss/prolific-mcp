@@ -19,7 +19,7 @@ async def test_get_sends_auth_header_and_returns_json(client: ProlificClient) ->
     assert route.called
     sent = route.calls.last.request
     assert sent.headers["authorization"] == "Token test-token-123456"
-    assert sent.headers["user-agent"] == "prolific-mcp/0.1.0"
+    assert sent.headers["user-agent"] == "prolific-mcp/0.0.1"
 
 
 @pytest.mark.asyncio
