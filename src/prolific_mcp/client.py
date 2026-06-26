@@ -5,7 +5,7 @@ import httpx
 from prolific_mcp.config import Config, load_config
 from prolific_mcp.errors import ProlificAPIError
 
-USER_AGENT = "prolific-mcp/0.1.0"
+USER_AGENT = "prolific-mcp/0.0.1"
 
 
 class ProlificClient:

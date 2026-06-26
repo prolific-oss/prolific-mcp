@@ -16,7 +16,7 @@ def _build_client(config: Config) -> ProlificClient:
         headers={
             "Authorization": f"Token {config.token}",
             "Content-Type": "application/json",
-            "User-Agent": "prolific-mcp/0.1.0",
+            "User-Agent": "prolific-mcp/0.0.1",
         },
     )
     return ProlificClient(config=config, client=httpx_client)
