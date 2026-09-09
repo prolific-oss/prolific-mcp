@@ -81,3 +81,8 @@ async def test_empty_2xx_response_returns_none(client: ProlificClient) -> None:
     respx.post("https://api.prolific.test/api/v1/things/").mock(return_value=httpx.Response(204))
 
     assert await client.post("/things/") is None
+
+
+@pytest.mark.asyncio
+async def test_base_url_returns_configured_root(client: ProlificClient) -> None:
+    assert client.base_url == "https://api.prolific.test"

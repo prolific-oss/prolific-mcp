@@ -26,6 +26,7 @@ Exposes a small set of tools so an LLM can help a researcher design and launch a
 | `view_study` | `GET /api/v1/studies/{id}/` |
 | `create_study` | `POST /api/v1/studies/` |
 | `publish_study` | `POST /api/v1/studies/{id}/transition/` |
+| `get_capabilities` | _(local — no Prolific endpoint; reports server version, target API URL, and registered tools)_ |
 
 ## Requirements
 
