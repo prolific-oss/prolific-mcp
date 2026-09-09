@@ -59,9 +59,6 @@ A dataset-driven study is a **Batch**, not a Collection — check for a dataset 
 | Financial reconciliation | Submission | `POST /api/v1/submissions/bonus-payments/`, `POST /api/v1/bulk-bonus-payments/{id}/pay/` | `bonus create` / `pay` | Not exposed | — |
 | Eligibility | Study | `POST /api/v1/eligibility-count/`, `GET /api/v1/filters/`, `GET /api/v1/filter-sets/` | `filters ...`, `filtersets ...`, `eligibilitycount ...` | `get_filters`, `get_filter_sets`, `create_filter_set`, `get_eligibility_count` | stable |
 | Discovery | Workspace/Project | `GET /api/v1/workspaces/`, `GET /api/v1/workspaces/{id}/projects/` | `workspace list`, `project list` | `list_workspaces`, `list_projects` | stable |
-| Server introspection | — | _(local — no Prolific endpoint)_ | — | `get_capabilities` | stable |
-
-The MCP tool and stability columns above are a point-in-time snapshot — call `get_capabilities` for the live, always-current tool list and stability for whatever server you're actually connected to.
 
 `publish_study` is the one **partial**-coverage row today — it wraps `transition` but only the `PUBLISH` action, not `PAUSE`/`START`/`STOP`. That's a natural first extension if MCP lifecycle coverage becomes a roadmap item.
 
