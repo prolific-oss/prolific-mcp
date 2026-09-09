@@ -32,7 +32,11 @@ Exposes a small set of tools so an LLM can help a researcher design and launch a
 
 This server currently wraps Prolific's classic Study resource, plus the filters/eligibility/workspace/project lookups needed to build one. It does not yet expose either of Prolific's AI Task Builder resources — **Collection** or **Batch** — or most of the study lifecycle beyond publish. The table below maps what exists today across MCP, REST, and the [`prolific` CLI](https://github.com/prolific-oss/cli), by capability area.
 
-Collection and Batch are separate resources, not aliases — Collection is static content with no dataset; Batch is dataset-driven and needs a setup/sync step first. Neither is exposed via MCP yet.
+**Collection and Batch are two different backend resources**, both under the AI Task Builder product, not aliases of each other:
+- **Collection** — static content, no dataset required, publishes immediately. CLI: `prolific collection ...`. REST: `/api/v1/data-collection/collections`.
+- **Batch** — dataset-driven; requires uploading a dataset and running `setup`/`sync` before it can publish; a much larger surface (sync, duplicate, instructions, tasks, reports). CLI: `prolific aitaskbuilder batch ...` / `prolific aitaskbuilder dataset ...`. REST: `/api/v1/data-collection/batches`.
+
+A dataset-driven study is a **Batch**, not a Collection — check for a dataset before describing capability in Collection terms.
 
 | Capability area | Resource | REST endpoint | CLI command | MCP tool | Stability |
 |---|---|---|---|---|---|
