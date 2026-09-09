@@ -6,7 +6,7 @@ from prolific_mcp.client import get_client
 from prolific_mcp.server import mcp
 
 
-@mcp.tool(tags={"stable"})
+@mcp.tool(meta={"stability": "stable"})
 async def get_filter_sets(
     workspace_id: Annotated[str, Field(description="ID of the workspace to scope to.")],
     limit: Annotated[int, Field(ge=1, le=500, description="Page size.")] = 200,
@@ -23,7 +23,7 @@ async def get_filter_sets(
     )
 
 
-@mcp.tool(tags={"stable"})
+@mcp.tool(meta={"stability": "stable"})
 async def create_filter_set(
     workspace_id: Annotated[str, Field(description="Workspace that will own the filter set.")],
     name: Annotated[str, Field(description="Human-readable name shown in the dashboard.")],

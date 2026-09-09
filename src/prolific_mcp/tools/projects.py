@@ -6,7 +6,7 @@ from prolific_mcp.client import get_client
 from prolific_mcp.server import mcp
 
 
-@mcp.tool(tags={"stable"})
+@mcp.tool(meta={"stability": "stable"})
 async def list_projects(
     workspace_id: Annotated[str, Field(description="ID of the workspace to list projects in.")],
 ) -> Any:

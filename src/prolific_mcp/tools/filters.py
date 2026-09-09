@@ -4,7 +4,7 @@ from prolific_mcp.client import get_client
 from prolific_mcp.server import mcp
 
 
-@mcp.tool(tags={"stable"})
+@mcp.tool(meta={"stability": "stable"})
 async def get_filters() -> Any:
     """List every participant filter the current API token can use.
 

@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -8,19 +8,25 @@ from prolific_mcp.server import mcp
 
 Stability = Literal["stable", "experimental"]
 
-_KNOWN_STABILITY_TAGS: tuple[Stability, ...] = ("stable", "experimental")
+_KNOWN_STABILITY_VALUES: tuple[Stability, ...] = ("stable", "experimental")
 _DEFAULT_STABILITY: Stability = "experimental"
 
 
-def _stability(tags: set[str]) -> Stability:
-    """Map a tool's FastMCP tags to a stability label.
+def _stability(meta: dict[str, Any] | None) -> Stability:
+    """Map a tool's `meta["stability"]` to a stability label.
 
-    Tools opt in to `stable` via `@mcp.tool(tags={"stable"})`. Anything
-    untagged defaults to `experimental` so a new tool never silently
-    looks production-ready before anyone has said so.
+    Tools opt in to `stable` via `@mcp.tool(meta={"stability": "stable"})`.
+    `meta` (not `tags`) is the documented FastMCP extension point for
+    custom, client-visible metadata — it's passed through to every MCP
+    client as the tool's `_meta` field on `tools/list`, unlike tags, which
+    are only conditionally surfaced under a nested `_meta._fastmcp.tags`
+    key. Anything without a recognized `stability` value defaults to
+    `experimental` so a new tool never silently looks production-ready
+    before anyone has said so.
     """
-    for candidate in _KNOWN_STABILITY_TAGS:
-        if candidate in tags:
+    value = (meta or {}).get("stability")
+    for candidate in _KNOWN_STABILITY_VALUES:
+        if value == candidate:
             return candidate
     return _DEFAULT_STABILITY
 
@@ -37,7 +43,7 @@ class ServerCapabilities(BaseModel):
     tools: list[ToolCapability] = Field(description="Every currently enabled tool on this server.")
 
 
-@mcp.tool(tags={"stable"})
+@mcp.tool(meta={"stability": "stable"})
 async def get_capabilities() -> ServerCapabilities:
     """Report this server's version, target Prolific API, and registered tools.
 
@@ -51,7 +57,7 @@ async def get_capabilities() -> ServerCapabilities:
             ToolCapability(
                 name=tool.name,
                 description=tool.description,
-                stability=_stability(tool.tags),
+                stability=_stability(tool.meta),
             )
             for tool in tools.values()
             if tool.enabled
