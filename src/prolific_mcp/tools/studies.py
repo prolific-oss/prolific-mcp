@@ -65,7 +65,7 @@ class StudyDraft(BaseModel):
     project: str | None = Field(default=None, description="Project ID within the workspace.")
 
 
-@mcp.tool
+@mcp.tool(tags={"stable"})
 async def list_studies(
     state: Annotated[
         str | None,
@@ -96,7 +96,7 @@ async def list_studies(
     return await get_client().get("/studies/", params=params)
 
 
-@mcp.tool
+@mcp.tool(tags={"stable"})
 async def view_study(
     study_id: Annotated[str, Field(description="ID of the study to fetch.")],
 ) -> Any:
@@ -109,7 +109,7 @@ async def view_study(
     return await get_client().get(f"/studies/{study_id}/")
 
 
-@mcp.tool
+@mcp.tool(tags={"stable"})
 async def create_study(study: StudyDraft) -> Any:
     """Create a draft (unpublished) study on Prolific.
 
@@ -119,7 +119,7 @@ async def create_study(study: StudyDraft) -> Any:
     return await get_client().post("/studies/", json=study.model_dump(exclude_none=True))
 
 
-@mcp.tool
+@mcp.tool(tags={"stable"})
 async def publish_study(
     study_id: Annotated[str, Field(description="ID of the study to publish.")],
 ) -> Any:

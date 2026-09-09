@@ -6,7 +6,7 @@ from prolific_mcp.client import get_client
 from prolific_mcp.server import mcp
 
 
-@mcp.tool
+@mcp.tool(tags={"stable"})
 async def get_eligibility_count(
     filters: Annotated[
         list[dict[str, Any]] | None,
