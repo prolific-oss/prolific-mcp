@@ -27,6 +27,42 @@ Exposes a small set of tools so an LLM can help a researcher design and launch a
 | `create_study` | `POST /api/v1/studies/` |
 | `publish_study` | `POST /api/v1/studies/{id}/transition/` |
 
+## Capability map
+
+This server currently wraps Prolific's classic Study resource, plus the filters/eligibility/workspace/project lookups needed to build one. It does not yet expose either of Prolific's AI Task Builder resources — **Collection** or **Batch** — or most of the study lifecycle beyond publish. The table below maps what exists today across MCP, REST, and the [`prolific` CLI](https://github.com/prolific-oss/cli), by capability area.
+
+**Collection and Batch are two different backend resources**, both under the AI Task Builder product, not aliases of each other:
+- **Collection** — static content, no dataset required, publishes immediately. CLI: `prolific collection ...`. REST: `/api/v1/data-collection/collections`.
+- **Batch** — dataset-driven; requires uploading a dataset and running `setup`/`sync` before it can publish; a much larger surface (sync, duplicate, instructions, tasks, reports). CLI: `prolific aitaskbuilder batch ...` / `prolific aitaskbuilder dataset ...`. REST: `/api/v1/data-collection/batches`.
+
+A dataset-driven study is a **Batch**, not a Collection — check for a dataset before describing capability in Collection terms.
+
+| Capability area | Resource | REST endpoint | CLI command | MCP tool | Stability |
+|---|---|---|---|---|---|
+| Creation/inspection | Collection | `POST /api/v1/data-collection/collections`, `GET .../collections/{id}` | `collection create` / `get <id>` / `list` | Not exposed | — |
+| Creation/inspection | Batch | `POST /api/v1/data-collection/batches`, `GET .../batches/{id}`, `GET .../batches/?workspace_id=` | `aitaskbuilder batch create` / `view <id>` / `list`; datasets via `aitaskbuilder dataset create` / `upload` / `check` | Not exposed | — |
+| Creation/inspection | Study | `POST /api/v1/studies/`, `GET /api/v1/studies/{id}` | `study create` / `view` / `list` | `create_study`, `view_study`, `list_studies` | stable |
+| Update | Study | `PATCH /api/v1/studies/{id}/` | `study update <study_id>` | Not exposed | — |
+| Update | Collection | `PATCH /api/v1/data-collection/collections/{id}/` | `collection update <collection-id>` | Not exposed | — |
+| Publish | Collection (via Study) | `POST /api/v1/studies/` with `data_collection_method="AI_TASK_BUILDER_COLLECTION"` + `data_collection_id=<id>`, then `POST /api/v1/studies/{id}/transition/` (`action=PUBLISH`) | `collection publish <collection-id>` | **Already possible, undocumented**: `create_study` forwards unknown fields, so passing `data_collection_method`/`data_collection_id` and then calling `publish_study` works today with no new MCP tool needed | stable (undocumented) |
+| Monitoring | Study | `GET /api/v1/studies/{id}/submissions/counts/` | `study submission-counts` | Not exposed | — |
+| Monitoring | Batch | `GET /api/v1/data-collection/batches/{id}/status` | `aitaskbuilder batch check <id>` | Not exposed | — |
+| Monitoring | Collection | `GET /api/v1/data-collection/collections/{id}` | `collection get <id>` | Not exposed | — |
+| Pause/start/stop | Study | `POST /api/v1/studies/{id}/transition/` (`action=PAUSE\|START\|STOP\|PUBLISH`) | `study transition <id> -a PAUSE\|STOP\|START` | `publish_study` (`PUBLISH` only) | stable (partial) |
+| Submissions | Study | `GET /api/v1/studies/{id}/submissions/?limit=&offset=` | `submission list` | Not exposed | — |
+| Approval | Submission | `POST /api/v1/submissions/{id}/transition/`, `POST /api/v1/submissions/bulk-approve/`, `POST /api/v1/submissions/{id}/request-return/` | `submission transition -a APPROVE\|...`, `bulk-approve`, `request-return` | Not exposed | — |
+| Exports | Collection | `GET`/`POST /api/v1/data-collection/collections/{id}/export`, `.../export/{exportId}` | `collection export <id>` | Not exposed | — |
+| Exports | Batch | `GET`/`POST /api/v1/data-collection/batches/{id}/export`, `.../export/{exportId}` | `aitaskbuilder batch export <id>` | Not exposed | — |
+| Exports | Study | `GET /api/v1/studies/{id}/demographic-export/` | `study demographic-export <id>` | Not exposed | — |
+| Webhooks | Workspace (cross-resource) | `POST`/`GET`/`PATCH`/`DELETE /api/v1/hooks/subscriptions/`, `GET /api/v1/hooks/event-types/` | `hook create` / `list` / `update` / `delete` / `event-list` / `event-type` / `create-secret` | Not exposed | — |
+| Financial reconciliation | Submission | `POST /api/v1/submissions/bonus-payments/`, `POST /api/v1/bulk-bonus-payments/{id}/pay/` | `bonus create` / `pay` | Not exposed | — |
+| Eligibility | Study | `POST /api/v1/eligibility-count/`, `GET /api/v1/filters/`, `GET /api/v1/filter-sets/` | `filters ...`, `filtersets ...`, `eligibilitycount ...` | `get_filters`, `get_filter_sets`, `create_filter_set`, `get_eligibility_count` | stable |
+| Discovery | Workspace/Project | `GET /api/v1/workspaces/`, `GET /api/v1/workspaces/{id}/projects/` | `workspace list`, `project list` | `list_workspaces`, `list_projects` | stable |
+
+`publish_study` is the one **partial**-coverage row today — it wraps `transition` but only the `PUBLISH` action, not `PAUSE`/`START`/`STOP`. That's a natural first extension if MCP lifecycle coverage becomes a roadmap item.
+
+CLI commands above omit the `prolific` binary prefix (e.g. `collection create` is `prolific collection create`) — run `prolific <command> --help` for exact flags before scripting against them.
+
 ## Requirements
 
 - Python 3.11+
