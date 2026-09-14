@@ -38,6 +38,9 @@ class ProlificClient:
     async def patch(self, path: str, json: Any | None = None) -> Any:
         return self._handle(await self._client.patch(path, json=json))
 
+    async def put(self, path: str, json: Any | None = None) -> Any:
+        return self._handle(await self._client.put(path, json=json))
+
     @staticmethod
     def _handle(response: httpx.Response) -> Any:
         if response.is_success:

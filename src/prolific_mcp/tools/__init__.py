@@ -2,6 +2,7 @@
 
 from prolific_mcp.tools import (
     capabilities,
+    collections,
     eligibility,
     filter_sets,
     filters,
@@ -12,6 +13,7 @@ from prolific_mcp.tools import (
 
 __all__ = [
     "capabilities",
+    "collections",
     "eligibility",
     "filter_sets",
     "filters",

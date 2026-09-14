@@ -26,6 +26,10 @@ Exposes a small set of tools so an LLM can help a researcher design and launch a
 | `view_study` | `GET /api/v1/studies/{id}/` |
 | `create_study` | `POST /api/v1/studies/` |
 | `publish_study` | `POST /api/v1/studies/{id}/transition/` |
+| `list_collections` | `GET /api/v1/data-collection/collections` |
+| `view_collection` | `GET /api/v1/data-collection/collections/{id}` |
+| `create_collection` | `POST /api/v1/data-collection/collections` |
+| `update_collection` | `PUT /api/v1/data-collection/collections/{id}/` |
 | `get_capabilities` | _(local — no Prolific endpoint; reports server version, target API URL, and registered tools)_ |
 
 ## Requirements
