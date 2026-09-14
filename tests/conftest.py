@@ -8,6 +8,7 @@ from prolific_mcp.client import ProlificClient
 from prolific_mcp.config import Config
 
 TEST_BASE_URL = "https://api.prolific.test"
+TEST_APP_URL = "https://app.prolific.test"
 
 
 def _build_client(config: Config) -> ProlificClient:
@@ -24,7 +25,7 @@ def _build_client(config: Config) -> ProlificClient:
 
 @pytest.fixture
 def config() -> Config:
-    return Config(token="test-token-123456", base_url=TEST_BASE_URL)
+    return Config(token="test-token-123456", base_url=TEST_BASE_URL, app_url=TEST_APP_URL)
 
 
 @pytest.fixture

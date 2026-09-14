@@ -82,6 +82,31 @@ async def view_collection(
     return await get_client().get(f"/data-collection/collections/{collection_id}")
 
 
+class CollectionPreview(BaseModel):
+    collection_id: str = Field(description="ID of the previewed collection.")
+    preview_url: str = Field(
+        description="Browser URL showing the collection as participants would see it."
+    )
+
+
+@mcp.tool(meta={"stability": "experimental"})
+async def preview_collection(
+    collection_id: Annotated[str, Field(description="ID of the collection to preview.")],
+) -> CollectionPreview:
+    """Get a browser preview URL for a collection, before publishing it.
+
+    Confirms the collection exists (raises if not), then returns a link
+    showing it as participants would see it — there's no API endpoint for
+    this, it's a deterministic URL, matching what `prolific collection
+    preview` opens locally in the CLI.
+    """
+    await get_client().get(f"/data-collection/collections/{collection_id}")
+    preview_url = (
+        f"{get_client().app_url}/data-collection-tool/collections/{collection_id}?preview=true"
+    )
+    return CollectionPreview(collection_id=collection_id, preview_url=preview_url)
+
+
 @mcp.tool(meta={"stability": "experimental"})
 async def list_collections(
     workspace_id: Annotated[str, Field(description="Workspace to list collections in.")],

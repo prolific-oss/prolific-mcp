@@ -6,6 +6,7 @@ import respx
 from pydantic import ValidationError
 
 from prolific_mcp.client import ProlificClient
+from prolific_mcp.errors import ProlificAPIError
 from prolific_mcp.tools.collections import (
     CollectionContent,
     CollectionDraft,
@@ -13,6 +14,7 @@ from prolific_mcp.tools.collections import (
     TaskDetails,
     create_collection,
     list_collections,
+    preview_collection,
     update_collection,
     view_collection,
 )
@@ -109,3 +111,29 @@ async def test_update_collection_puts_full_replacement(installed_client: Prolifi
 def test_collection_content_rejects_empty_items() -> None:
     with pytest.raises(ValidationError):
         CollectionContent(name="x", task_details=_task_details(), collection_items=[])
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_preview_collection_returns_app_url(installed_client: ProlificClient) -> None:
+    respx.get("https://api.prolific.test/api/v1/data-collection/collections/col_1").mock(
+        return_value=httpx.Response(200, json={"id": "col_1"})
+    )
+
+    result = await preview_collection.fn(collection_id="col_1")
+
+    assert result.collection_id == "col_1"
+    assert result.preview_url == (
+        "https://app.prolific.test/data-collection-tool/collections/col_1?preview=true"
+    )
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_preview_collection_raises_when_not_found(installed_client: ProlificClient) -> None:
+    respx.get("https://api.prolific.test/api/v1/data-collection/collections/missing").mock(
+        return_value=httpx.Response(404, json={"detail": "not found"})
+    )
+
+    with pytest.raises(ProlificAPIError):
+        await preview_collection.fn(collection_id="missing")

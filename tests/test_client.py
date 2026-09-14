@@ -99,3 +99,8 @@ async def test_empty_2xx_response_returns_none(client: ProlificClient) -> None:
 @pytest.mark.asyncio
 async def test_base_url_returns_configured_root(client: ProlificClient) -> None:
     assert client.base_url == "https://api.prolific.test"
+
+
+@pytest.mark.asyncio
+async def test_app_url_returns_configured_root(client: ProlificClient) -> None:
+    assert client.app_url == "https://app.prolific.test"
