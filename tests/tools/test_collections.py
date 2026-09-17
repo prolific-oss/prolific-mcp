@@ -48,7 +48,7 @@ async def test_create_collection_posts_dump(installed_client: ProlificClient) ->
         return_value=httpx.Response(201, json={"id": "col_1", "name": "Image labelling"})
     )
 
-    result = await create_collection.fn(collection=_draft())
+    result = await create_collection(collection=_draft())
 
     assert result == {"id": "col_1", "name": "Image labelling"}
     sent = json.loads(route.calls.last.request.content)
@@ -65,7 +65,7 @@ async def test_view_collection_hits_detail_endpoint(installed_client: ProlificCl
         return_value=httpx.Response(200, json={"id": "col_1"})
     )
 
-    result = await view_collection.fn(collection_id="col_1")
+    result = await view_collection(collection_id="col_1")
 
     assert route.called
     assert result == {"id": "col_1"}
@@ -78,7 +78,7 @@ async def test_list_collections_passes_query_params(installed_client: ProlificCl
         return_value=httpx.Response(200, json={"results": [], "meta": {"count": 0}})
     )
 
-    await list_collections.fn(workspace_id="ws_1", limit=50, offset=10)
+    await list_collections(workspace_id="ws_1", limit=50, offset=10)
 
     sent = route.calls.last.request
     assert sent.url.params["workspace_id"] == "ws_1"
@@ -93,7 +93,7 @@ async def test_update_collection_puts_full_replacement(installed_client: Prolifi
         return_value=httpx.Response(200, json={"id": "col_1"})
     )
 
-    result = await update_collection.fn(
+    result = await update_collection(
         collection_id="col_1",
         collection=CollectionContent(
             name="Image labelling v2",
@@ -120,7 +120,7 @@ async def test_preview_collection_returns_app_url(installed_client: ProlificClie
         return_value=httpx.Response(200, json={"id": "col_1"})
     )
 
-    result = await preview_collection.fn(collection_id="col_1")
+    result = await preview_collection(collection_id="col_1")
 
     assert result.collection_id == "col_1"
     assert result.preview_url == (
@@ -136,4 +136,4 @@ async def test_preview_collection_raises_when_not_found(installed_client: Prolif
     )
 
     with pytest.raises(ProlificAPIError):
-        await preview_collection.fn(collection_id="missing")
+        await preview_collection(collection_id="missing")
