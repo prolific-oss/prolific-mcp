@@ -66,6 +66,26 @@ def test_falls_back_to_generic_message_when_detail_is_empty() -> None:
     assert str(error) == f"Prolific API returned 400: {body!r}"
 
 
+def test_falls_back_to_generic_message_when_detail_is_missing() -> None:
+    body = {"error": {"status": 500}}
+
+    error = ProlificAPIError(500, body)
+
+    assert error.field_errors is None
+    assert str(error) == f"Prolific API returned 500: {body!r}"
+
+
+def test_falls_back_to_generic_message_when_a_field_value_is_nested() -> None:
+    """A nested serializer can produce a dict-valued field instead of a flat
+    list of messages — treated as unrecognised shape rather than guessed at."""
+    body = {"error": {"detail": {"items": {"0": {"name": ["This field is required."]}}}}}
+
+    error = ProlificAPIError(400, body)
+
+    assert error.field_errors is None
+    assert str(error) == f"Prolific API returned 400: {body!r}"
+
+
 def test_explicit_message_overrides_generated_one() -> None:
     error = ProlificAPIError(400, {"error": {"detail": {"x": ["y"]}}}, message="custom")
 

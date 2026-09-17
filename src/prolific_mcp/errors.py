@@ -12,14 +12,16 @@ def _extract_field_errors(body: Any) -> dict[str, list[str]] | None:
     where `detail` is a dict of field name -> list of messages for validation
     failures. At least one endpoint returns a bare `{"error": {"detail": "..."}}`
     without the rest of the envelope, and `detail` there is a plain string, not
-    a field dict — this is treated as "no field errors" rather than guessed at.
+    a field dict. A nested serializer could also produce a dict-valued field
+    (e.g. `{"items": {"0": {"name": [...]}}}`) rather than a flat list. Both
+    shapes are treated as "no field errors" rather than guessed at.
     """
     if not isinstance(body, dict):
         return None
-    error = body.get("error", body)
-    if not isinstance(error, dict):
+    envelope = body.get("error", body)
+    if not isinstance(envelope, dict):
         return None
-    detail = error.get("detail")
+    detail = envelope.get("detail")
     if not isinstance(detail, dict) or not detail:
         return None
     if not all(isinstance(messages, list) for messages in detail.values()):
