@@ -51,7 +51,7 @@ async def get_capabilities() -> ServerCapabilities:
     right now — e.g. to check whether a tool exists before calling it, or
     to confirm which Prolific environment (`PROLIFIC_URL`) it's wired up to.
     """
-    tools = await mcp.get_tools()
+    tools = await mcp.list_tools()
     capabilities = sorted(
         (
             ToolCapability(
@@ -59,8 +59,7 @@ async def get_capabilities() -> ServerCapabilities:
                 description=tool.description,
                 stability=_stability(tool.meta),
             )
-            for tool in tools.values()
-            if tool.enabled
+            for tool in tools
         ),
         key=lambda tool: tool.name,
     )

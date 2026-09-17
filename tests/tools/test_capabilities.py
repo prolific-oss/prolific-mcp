@@ -22,7 +22,7 @@ _EXISTING_TOOL_NAMES = {
 
 @pytest.mark.asyncio
 async def test_reports_version_and_api_base_url(installed_client: ProlificClient) -> None:
-    result = await get_capabilities.fn()
+    result = await get_capabilities()
 
     assert result.server_version == __version__
     assert result.api_base_url == "https://api.prolific.test"
@@ -30,7 +30,7 @@ async def test_reports_version_and_api_base_url(installed_client: ProlificClient
 
 @pytest.mark.asyncio
 async def test_lists_registered_tools_as_stable(installed_client: ProlificClient) -> None:
-    result = await get_capabilities.fn()
+    result = await get_capabilities()
     by_name = {tool.name: tool for tool in result.tools}
 
     assert _EXISTING_TOOL_NAMES <= by_name.keys()
@@ -49,11 +49,11 @@ async def test_tool_without_stability_meta_defaults_to_experimental(
         return "ok"
 
     try:
-        result = await get_capabilities.fn()
+        result = await get_capabilities()
         by_name = {tool.name: tool for tool in result.tools}
         assert by_name["_throwaway_tool"].stability == "experimental"
     finally:
-        mcp.remove_tool("_throwaway_tool")
+        mcp.local_provider.remove_tool("_throwaway_tool")
 
 
 @pytest.mark.asyncio
@@ -65,8 +65,8 @@ async def test_stability_reaches_the_wire_meta_directly(
     right mechanism for stability, not just something `get_capabilities`
     happens to be able to see.
     """
-    tools = await mcp.get_tools()
-    wire_tool = tools["list_workspaces"].to_mcp_tool()
+    tools = await mcp.list_tools()
+    wire_tool = next(t for t in tools if t.name == "list_workspaces").to_mcp_tool()
 
     assert wire_tool.meta is not None
     assert wire_tool.meta["stability"] == "stable"
