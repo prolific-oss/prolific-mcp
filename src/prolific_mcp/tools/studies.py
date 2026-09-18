@@ -133,3 +133,28 @@ async def publish_study(
         f"/studies/{study_id}/transition/",
         json={"action": "PUBLISH"},
     )
+
+
+@mcp.tool(meta={"stability": "experimental"})
+async def export_study_demographics(
+    study_id: Annotated[str, Field(description="ID of the study to export demographics for.")],
+    filters: Annotated[
+        list[dict[str, Any]] | None,
+        Field(
+            description=(
+                "Eligibility filters to break the export down by, shaped like "
+                "entries from `get_filters`. Omit or pass an empty list for no "
+                "breakdown — required by studies with eligibility or quota "
+                "requirements even when empty; harmless to pass for any other study."
+            )
+        ),
+    ] = None,
+) -> str:
+    """Export demographic data across all submissions in a study, as CSV.
+
+    Synchronous — the export is returned directly in the response, no polling.
+    """
+    return await get_client().post_text(
+        f"/studies/{study_id}/demographic-export/",
+        json={"filters": filters or []},
+    )

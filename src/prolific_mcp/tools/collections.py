@@ -142,3 +142,37 @@ async def update_collection(
         f"/data-collection/collections/{collection_id}/",
         json=collection.model_dump(exclude_none=True),
     )
+
+
+@mcp.tool(meta={"stability": "experimental"})
+async def export_collection(
+    collection_id: Annotated[str, Field(description="ID of the collection to export.")],
+) -> Any:
+    """Start an export of a collection's responses, or return one already generating/ready.
+
+    The export is generated asynchronously. Returns `{status, export_id, url,
+    expires_at}`: `status` is `"generating"` (call `get_collection_export_status`
+    with the returned `export_id` to poll) or `"complete"` (a cached export
+    already existed — `url` is ready now). A 403 here usually means AI Task
+    Builder Collections isn't enabled for this account, not an export-specific
+    problem.
+    """
+    return await get_client().post(f"/data-collection/collections/{collection_id}/export")
+
+
+@mcp.tool(meta={"stability": "experimental"})
+async def get_collection_export_status(
+    collection_id: Annotated[str, Field(description="ID of the collection being exported.")],
+    export_id: Annotated[str, Field(description="Export ID returned by export_collection.")],
+) -> Any:
+    """Poll the status of an in-progress collection export.
+
+    Returns `{status, export_id, url, expires_at}`: `status` is
+    `"generating"`, `"complete"` (`url` is a presigned download link for the
+    response ZIP), or `"failed"`. Poll every 10-30 seconds rather than
+    tightly — each check here is a full round trip, unlike a local script's
+    loop.
+    """
+    return await get_client().get(
+        f"/data-collection/collections/{collection_id}/export/{export_id}"
+    )
