@@ -11,7 +11,10 @@ from prolific_mcp.tools.studies import (
     create_study,
     export_study_demographics,
     list_studies,
+    pause_study,
     publish_study,
+    resume_study,
+    stop_study,
     view_study,
 )
 
@@ -104,6 +107,48 @@ async def test_publish_study_calls_transition(installed_client: ProlificClient) 
     assert result == {"id": "study_1", "status": "ACTIVE"}
     sent = json.loads(route.calls.last.request.content)
     assert sent == {"action": "PUBLISH"}
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_pause_study_calls_transition(installed_client: ProlificClient) -> None:
+    route = respx.post("https://api.prolific.test/api/v1/studies/study_1/transition/").mock(
+        return_value=httpx.Response(200, json={"id": "study_1", "status": "PAUSED"})
+    )
+
+    result = await pause_study(study_id="study_1")
+
+    assert result == {"id": "study_1", "status": "PAUSED"}
+    sent = json.loads(route.calls.last.request.content)
+    assert sent == {"action": "PAUSE"}
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_resume_study_calls_transition(installed_client: ProlificClient) -> None:
+    route = respx.post("https://api.prolific.test/api/v1/studies/study_1/transition/").mock(
+        return_value=httpx.Response(200, json={"id": "study_1", "status": "ACTIVE"})
+    )
+
+    result = await resume_study(study_id="study_1")
+
+    assert result == {"id": "study_1", "status": "ACTIVE"}
+    sent = json.loads(route.calls.last.request.content)
+    assert sent == {"action": "START"}
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_stop_study_calls_transition(installed_client: ProlificClient) -> None:
+    route = respx.post("https://api.prolific.test/api/v1/studies/study_1/transition/").mock(
+        return_value=httpx.Response(200, json={"id": "study_1", "status": "COMPLETED"})
+    )
+
+    result = await stop_study(study_id="study_1")
+
+    assert result == {"id": "study_1", "status": "COMPLETED"}
+    sent = json.loads(route.calls.last.request.content)
+    assert sent == {"action": "STOP"}
 
 
 @pytest.mark.asyncio

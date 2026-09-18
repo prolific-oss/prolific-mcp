@@ -136,6 +136,55 @@ async def publish_study(
 
 
 @experimental_tool()
+async def pause_study(
+    study_id: Annotated[str, Field(description="ID of the study to pause.")],
+) -> Any:
+    """Pause an active study, stopping new participants from starting it.
+
+    Wraps `POST /studies/{id}/transition/` with `action=PAUSE`. Idempotent
+    by design — safe to call even if the study is already paused, the API
+    returns it as-is rather than erroring. Call `resume_study` to unpause.
+    """
+    return await get_client().post(
+        f"/studies/{study_id}/transition/",
+        json={"action": "PAUSE"},
+    )
+
+
+@experimental_tool()
+async def resume_study(
+    study_id: Annotated[str, Field(description="ID of the paused study to resume.")],
+) -> Any:
+    """Resume a paused study so participants can start it again.
+
+    Wraps `POST /studies/{id}/transition/` with `action=START` — the
+    platform's "unpause" action, only valid on a currently-paused study.
+    Idempotent by design, matching `pause_study`.
+    """
+    return await get_client().post(
+        f"/studies/{study_id}/transition/",
+        json={"action": "START"},
+    )
+
+
+@experimental_tool()
+async def stop_study(
+    study_id: Annotated[str, Field(description="ID of the study to stop.")],
+) -> Any:
+    """Permanently stop a study, ending data collection.
+
+    Wraps `POST /studies/{id}/transition/` with `action=STOP`. This is a
+    one-way transition to `COMPLETED` — there is no researcher-facing way
+    to reopen a stopped study through this API. Ask for approval each time,
+    same as `publish_study`.
+    """
+    return await get_client().post(
+        f"/studies/{study_id}/transition/",
+        json={"action": "STOP"},
+    )
+
+
+@experimental_tool()
 async def export_study_demographics(
     study_id: Annotated[str, Field(description="ID of the study to export demographics for.")],
     filters: Annotated[
