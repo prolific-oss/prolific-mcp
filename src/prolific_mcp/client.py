@@ -21,6 +21,11 @@ class ProlificClient:
             timeout=30.0,
         )
 
+    @property
+    def base_url(self) -> str:
+        """Root Prolific API URL this client targets, e.g. https://api.prolific.com."""
+        return self._config.base_url
+
     async def aclose(self) -> None:
         await self._client.aclose()
 
