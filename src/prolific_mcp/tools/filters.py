@@ -1,10 +1,10 @@
 from typing import Any
 
 from prolific_mcp.client import get_client
-from prolific_mcp.server import mcp
+from prolific_mcp.server import stable_tool
 
 
-@mcp.tool(meta={"stability": "stable"})
+@stable_tool()
 async def get_filters() -> Any:
     """List every participant filter the current API token can use.
 

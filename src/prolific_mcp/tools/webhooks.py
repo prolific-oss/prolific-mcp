@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 from prolific_mcp.client import get_client
 from prolific_mcp.errors import ProlificAPIError
-from prolific_mcp.server import mcp
+from prolific_mcp.server import experimental_tool
 
 
 async def _secret_exists(workspace_id: str) -> bool:
@@ -24,7 +24,7 @@ class WebhookSecretStatus(BaseModel):
     )
 
 
-@mcp.tool(meta={"stability": "experimental"})
+@experimental_tool()
 async def ensure_webhook_secret(
     workspace_id: Annotated[str, Field(description="Workspace to check.")],
 ) -> WebhookSecretStatus:
@@ -52,7 +52,7 @@ class WebhookSecret(BaseModel):
     )
 
 
-@mcp.tool(meta={"stability": "experimental"})
+@experimental_tool()
 async def create_webhook_secret(
     workspace_id: Annotated[str, Field(description="Workspace to create a secret for.")],
     confirm_rotation: Annotated[
@@ -86,7 +86,7 @@ async def create_webhook_secret(
     return WebhookSecret(workspace_id=workspace_id, value=response["value"])
 
 
-@mcp.tool(meta={"stability": "experimental"})
+@experimental_tool()
 async def list_webhook_event_types() -> Any:
     """List event types available to subscribe to, e.g. `study.status.change`.
 
@@ -95,7 +95,7 @@ async def list_webhook_event_types() -> Any:
     return await get_client().get("/hooks/event-types/")
 
 
-@mcp.tool(meta={"stability": "experimental"})
+@experimental_tool()
 async def create_webhook_subscription(
     workspace_id: Annotated[str, Field(description="Workspace to create the subscription in.")],
     event_type: Annotated[
@@ -154,7 +154,7 @@ async def create_webhook_subscription(
         ) from exc
 
 
-@mcp.tool(meta={"stability": "experimental"})
+@experimental_tool()
 async def list_webhook_subscriptions(
     workspace_id: Annotated[str, Field(description="Workspace to list subscriptions in.")],
     enabled: Annotated[
@@ -186,7 +186,7 @@ async def list_webhook_subscriptions(
     )
 
 
-@mcp.tool(meta={"stability": "experimental"})
+@experimental_tool()
 async def update_webhook_subscription(
     subscription_id: Annotated[str, Field(description="ID of the subscription to update.")],
     event_type: Annotated[str | None, Field(description="New event type to subscribe to.")] = None,
@@ -217,7 +217,7 @@ async def update_webhook_subscription(
     return await get_client().patch(f"/hooks/subscriptions/{subscription_id}/", json=payload)
 
 
-@mcp.tool(meta={"stability": "experimental"})
+@experimental_tool()
 async def delete_webhook_subscription(
     subscription_id: Annotated[str, Field(description="ID of the subscription to delete.")],
 ) -> None:
@@ -229,7 +229,7 @@ async def delete_webhook_subscription(
     await get_client().delete(f"/hooks/subscriptions/{subscription_id}/")
 
 
-@mcp.tool(meta={"stability": "experimental"})
+@experimental_tool()
 async def list_webhook_events(
     subscription_id: Annotated[
         str, Field(description="Subscription to list delivered events for.")

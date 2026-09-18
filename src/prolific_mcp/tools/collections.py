@@ -3,7 +3,7 @@ from typing import Annotated, Any
 from pydantic import BaseModel, ConfigDict, Field
 
 from prolific_mcp.client import get_client
-from prolific_mcp.server import mcp
+from prolific_mcp.server import experimental_tool
 
 
 class TaskDetails(BaseModel):
@@ -53,7 +53,7 @@ class CollectionDraft(CollectionContent):
     workspace_id: str = Field(description="Workspace that will own the collection.")
 
 
-@mcp.tool(meta={"stability": "experimental"})
+@experimental_tool()
 async def create_collection(collection: CollectionDraft) -> Any:
     """Create an AI Task Builder collection.
 
@@ -69,7 +69,7 @@ async def create_collection(collection: CollectionDraft) -> Any:
     )
 
 
-@mcp.tool(meta={"stability": "experimental"})
+@experimental_tool()
 async def view_collection(
     collection_id: Annotated[str, Field(description="ID of the collection to fetch.")],
 ) -> Any:
@@ -89,7 +89,7 @@ class CollectionPreview(BaseModel):
     )
 
 
-@mcp.tool(meta={"stability": "experimental"})
+@experimental_tool()
 async def preview_collection(
     collection_id: Annotated[str, Field(description="ID of the collection to preview.")],
 ) -> CollectionPreview:
@@ -107,7 +107,7 @@ async def preview_collection(
     return CollectionPreview(collection_id=collection_id, preview_url=preview_url)
 
 
-@mcp.tool(meta={"stability": "experimental"})
+@experimental_tool()
 async def list_collections(
     workspace_id: Annotated[str, Field(description="Workspace to list collections in.")],
     limit: Annotated[int, Field(ge=1, le=500, description="Page size.")] = 200,
@@ -124,7 +124,7 @@ async def list_collections(
     )
 
 
-@mcp.tool(meta={"stability": "experimental"})
+@experimental_tool()
 async def update_collection(
     collection_id: Annotated[str, Field(description="ID of the collection to replace.")],
     collection: CollectionContent,
@@ -144,7 +144,7 @@ async def update_collection(
     )
 
 
-@mcp.tool(meta={"stability": "experimental"})
+@experimental_tool()
 async def export_collection(
     collection_id: Annotated[str, Field(description="ID of the collection to export.")],
 ) -> Any:
@@ -160,7 +160,7 @@ async def export_collection(
     return await get_client().post(f"/data-collection/collections/{collection_id}/export")
 
 
-@mcp.tool(meta={"stability": "experimental"})
+@experimental_tool()
 async def get_collection_export_status(
     collection_id: Annotated[str, Field(description="ID of the collection being exported.")],
     export_id: Annotated[str, Field(description="Export ID returned by export_collection.")],
