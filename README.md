@@ -31,7 +31,21 @@ Exposes a small set of tools so an LLM can help a researcher design and launch a
 | `preview_collection` | _(no Prolific endpoint — returns a deterministic app preview URL)_ |
 | `create_collection` | `POST /api/v1/data-collection/collections` |
 | `update_collection` | `PUT /api/v1/data-collection/collections/{id}/` |
+| `export_collection` | `POST /api/v1/data-collection/collections/{id}/export` |
+| `get_collection_export_status` | `GET /api/v1/data-collection/collections/{id}/export/{export_id}` |
+| `export_study_demographics` | `POST /api/v1/studies/{id}/demographic-export/` |
+| `list_webhook_event_types` | `GET /api/v1/hooks/event-types/` |
+| `ensure_webhook_secret` | `GET /api/v1/hooks/secrets/` (existence only — see note below) |
+| `create_webhook_secret` | `POST /api/v1/hooks/secrets/` |
+| `create_webhook_subscription` | `POST /api/v1/hooks/subscriptions/` + confirm |
+| `list_webhook_subscriptions` | `GET /api/v1/hooks/subscriptions` |
+| `update_webhook_subscription` | `PATCH /api/v1/hooks/subscriptions/{id}/` |
+| `delete_webhook_subscription` | `DELETE /api/v1/hooks/subscriptions/{id}/` |
+| `list_webhook_events` | `GET /api/v1/hooks/subscriptions/{id}/events/` |
 | `get_capabilities` | _(local — no Prolific endpoint; reports server version, target API URL, and registered tools)_ |
+
+> [!NOTE]
+> **Webhook secrets are handled deliberately narrowly.** `create_webhook_secret` is the only tool in this repo that returns sensitive material, and only once, on first creation for a workspace — there's no tool to list or re-fetch an existing secret's value, since that value would then sit in the LLM's context on every read. If a workspace already has a secret and you need to see its value again (e.g. to reconfigure a receiver), that's `prolific hook secrets -w <workspace_id>` via the [CLI](https://github.com/prolific-oss/cli), not MCP.
 
 ## Requirements
 

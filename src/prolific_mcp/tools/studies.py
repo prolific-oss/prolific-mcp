@@ -3,7 +3,7 @@ from typing import Annotated, Any
 from pydantic import BaseModel, ConfigDict, Field
 
 from prolific_mcp.client import get_client
-from prolific_mcp.server import mcp
+from prolific_mcp.server import experimental_tool, stable_tool
 
 
 class CompletionCode(BaseModel):
@@ -65,7 +65,7 @@ class StudyDraft(BaseModel):
     project: str | None = Field(default=None, description="Project ID within the workspace.")
 
 
-@mcp.tool(meta={"stability": "stable"})
+@stable_tool()
 async def list_studies(
     state: Annotated[
         str | None,
@@ -96,7 +96,7 @@ async def list_studies(
     return await get_client().get("/studies/", params=params)
 
 
-@mcp.tool(meta={"stability": "stable"})
+@stable_tool()
 async def view_study(
     study_id: Annotated[str, Field(description="ID of the study to fetch.")],
 ) -> Any:
@@ -109,7 +109,7 @@ async def view_study(
     return await get_client().get(f"/studies/{study_id}/")
 
 
-@mcp.tool(meta={"stability": "stable"})
+@stable_tool()
 async def create_study(study: StudyDraft) -> Any:
     """Create a draft (unpublished) study on Prolific.
 
@@ -119,7 +119,7 @@ async def create_study(study: StudyDraft) -> Any:
     return await get_client().post("/studies/", json=study.model_dump(exclude_none=True))
 
 
-@mcp.tool(meta={"stability": "stable"})
+@stable_tool()
 async def publish_study(
     study_id: Annotated[str, Field(description="ID of the study to publish.")],
 ) -> Any:
@@ -132,4 +132,29 @@ async def publish_study(
     return await get_client().post(
         f"/studies/{study_id}/transition/",
         json={"action": "PUBLISH"},
+    )
+
+
+@experimental_tool()
+async def export_study_demographics(
+    study_id: Annotated[str, Field(description="ID of the study to export demographics for.")],
+    filters: Annotated[
+        list[dict[str, Any]] | None,
+        Field(
+            description=(
+                "Eligibility filters to break the export down by, shaped like "
+                "entries from `get_filters`. Omit or pass an empty list for no "
+                "breakdown — required by studies with eligibility or quota "
+                "requirements even when empty; harmless to pass for any other study."
+            )
+        ),
+    ] = None,
+) -> str:
+    """Export demographic data across all submissions in a study, as CSV.
+
+    Synchronous — the export is returned directly in the response, no polling.
+    """
+    return await get_client().post_text(
+        f"/studies/{study_id}/demographic-export/",
+        json={"filters": filters or []},
     )
