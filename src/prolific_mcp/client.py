@@ -26,6 +26,11 @@ class ProlificClient:
         """Root Prolific API URL this client targets, e.g. https://api.prolific.com."""
         return self._config.base_url
 
+    @property
+    def app_url(self) -> str:
+        """Root Prolific web app URL, e.g. https://app.prolific.com (for preview links)."""
+        return self._config.app_url
+
     async def aclose(self) -> None:
         await self._client.aclose()
 
@@ -37,6 +42,9 @@ class ProlificClient:
 
     async def patch(self, path: str, json: Any | None = None) -> Any:
         return self._handle(await self._client.patch(path, json=json))
+
+    async def put(self, path: str, json: Any | None = None) -> Any:
+        return self._handle(await self._client.put(path, json=json))
 
     @staticmethod
     def _handle(response: httpx.Response) -> Any:

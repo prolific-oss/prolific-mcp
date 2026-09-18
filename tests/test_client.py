@@ -37,6 +37,19 @@ async def test_post_sends_json_body(client: ProlificClient) -> None:
 
 @pytest.mark.asyncio
 @respx.mock
+async def test_put_sends_json_body(client: ProlificClient) -> None:
+    route = respx.put("https://api.prolific.test/api/v1/things/").mock(
+        return_value=httpx.Response(200, json={"id": "x"})
+    )
+
+    result = await client.put("/things/", json={"name": "foo"})
+
+    assert result == {"id": "x"}
+    assert route.calls.last.request.content == b'{"name":"foo"}'
+
+
+@pytest.mark.asyncio
+@respx.mock
 async def test_get_with_query_params(client: ProlificClient) -> None:
     route = respx.get("https://api.prolific.test/api/v1/things/").mock(
         return_value=httpx.Response(200, json=[])
@@ -86,3 +99,8 @@ async def test_empty_2xx_response_returns_none(client: ProlificClient) -> None:
 @pytest.mark.asyncio
 async def test_base_url_returns_configured_root(client: ProlificClient) -> None:
     assert client.base_url == "https://api.prolific.test"
+
+
+@pytest.mark.asyncio
+async def test_app_url_returns_configured_root(client: ProlificClient) -> None:
+    assert client.app_url == "https://app.prolific.test"

@@ -26,6 +26,11 @@ Exposes a small set of tools so an LLM can help a researcher design and launch a
 | `view_study` | `GET /api/v1/studies/{id}/` |
 | `create_study` | `POST /api/v1/studies/` |
 | `publish_study` | `POST /api/v1/studies/{id}/transition/` |
+| `list_collections` | `GET /api/v1/data-collection/collections` |
+| `view_collection` | `GET /api/v1/data-collection/collections/{id}` |
+| `preview_collection` | _(no Prolific endpoint — returns a deterministic app preview URL)_ |
+| `create_collection` | `POST /api/v1/data-collection/collections` |
+| `update_collection` | `PUT /api/v1/data-collection/collections/{id}/` |
 | `get_capabilities` | _(local — no Prolific endpoint; reports server version, target API URL, and registered tools)_ |
 
 ## Requirements
@@ -72,6 +77,7 @@ Override host/port with `--host` / `--port` if `8765` is in use.
 |---|---|---|---|
 | `PROLIFIC_TOKEN` | yes | — | Prolific API token, sent as `Authorization: Token …` |
 | `PROLIFIC_URL` | no | `https://api.prolific.com` | Base URL of the Prolific API |
+| `PROLIFIC_APPLICATION_URL` | no | `https://app.prolific.com` | Base URL of the Prolific web app, used for `preview_collection`'s link |
 
 ## Use with MCP clients
 

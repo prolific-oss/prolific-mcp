@@ -23,6 +23,24 @@ def test_load_config_strips_trailing_slash_from_url(monkeypatch: pytest.MonkeyPa
     assert cfg.base_url == "https://api.example.com"
 
 
+def test_load_config_reads_default_app_url(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("PROLIFIC_TOKEN", "abc")
+    monkeypatch.delenv("PROLIFIC_APPLICATION_URL", raising=False)
+
+    cfg = config_module.load_config()
+
+    assert cfg.app_url == config_module.DEFAULT_PROLIFIC_APPLICATION_URL
+
+
+def test_load_config_strips_trailing_slash_from_app_url(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("PROLIFIC_TOKEN", "abc")
+    monkeypatch.setenv("PROLIFIC_APPLICATION_URL", "https://app.example.com/")
+
+    cfg = config_module.load_config()
+
+    assert cfg.app_url == "https://app.example.com"
+
+
 def test_load_config_raises_when_token_missing(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("PROLIFIC_TOKEN", raising=False)
 
