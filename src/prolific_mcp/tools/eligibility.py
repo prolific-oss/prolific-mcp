@@ -3,10 +3,10 @@ from typing import Annotated, Any
 from pydantic import Field
 
 from prolific_mcp.client import get_client
-from prolific_mcp.server import mcp
+from prolific_mcp.server import stable_tool
 
 
-@mcp.tool(meta={"stability": "stable"})
+@stable_tool()
 async def get_eligibility_count(
     filters: Annotated[
         list[dict[str, Any]] | None,

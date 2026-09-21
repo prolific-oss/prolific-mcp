@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 from prolific_mcp import __version__
 from prolific_mcp.client import get_client
-from prolific_mcp.server import mcp
+from prolific_mcp.server import mcp, stable_tool
 
 Stability = Literal["stable", "experimental"]
 
@@ -15,8 +15,10 @@ _DEFAULT_STABILITY: Stability = "experimental"
 def _stability(meta: dict[str, Any] | None) -> Stability:
     """Map a tool's `meta["stability"]` to a stability label.
 
-    Tools opt in to `stable` via `@mcp.tool(meta={"stability": "stable"})`.
-    `meta` (not `tags`) is the documented FastMCP extension point for
+    Tools opt in to `stable` via the `@stable_tool()` decorator (a thin
+    wrapper around `@mcp.tool(meta={"stability": "stable"})`, see
+    `prolific_mcp.server`). `meta` (not `tags`) is the documented FastMCP
+    extension point for
     custom, client-visible metadata — it's passed through to every MCP
     client as the tool's `_meta` field on `tools/list`, unlike tags, which
     are only conditionally surfaced under a nested `_meta._fastmcp.tags`
@@ -43,7 +45,7 @@ class ServerCapabilities(BaseModel):
     tools: list[ToolCapability] = Field(description="Every currently enabled tool on this server.")
 
 
-@mcp.tool(meta={"stability": "stable"})
+@stable_tool()
 async def get_capabilities() -> ServerCapabilities:
     """Report this server's version, target Prolific API, and registered tools.
 

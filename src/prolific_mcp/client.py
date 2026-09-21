@@ -40,23 +40,50 @@ class ProlificClient:
     async def post(self, path: str, json: Any | None = None) -> Any:
         return self._handle(await self._client.post(path, json=json))
 
+    async def post_with_headers(
+        self, path: str, json: Any | None = None
+    ) -> tuple[Any, httpx.Headers]:
+        """Like `post`, but also returns the response headers.
+
+        Needed for endpoints that carry data outside the JSON body — e.g. the
+        webhook subscription confirm handshake's one-time secret, delivered
+        via the `X-Hook-Secret` response header rather than the body.
+        """
+        response = await self._client.post(path, json=json)
+        return self._handle(response), response.headers
+
+    async def post_text(self, path: str, json: Any | None = None) -> str:
+        """Like `post`, but for endpoints whose successful response is plain
+        text (e.g. CSV), not JSON — `_handle` would fail decoding it as JSON."""
+        response = await self._client.post(path, json=json)
+        self._raise_for_error(response)
+        return response.text
+
     async def patch(self, path: str, json: Any | None = None) -> Any:
         return self._handle(await self._client.patch(path, json=json))
 
     async def put(self, path: str, json: Any | None = None) -> Any:
         return self._handle(await self._client.put(path, json=json))
 
+    async def delete(self, path: str) -> Any:
+        return self._handle(await self._client.delete(path))
+
     @staticmethod
-    def _handle(response: httpx.Response) -> Any:
+    def _raise_for_error(response: httpx.Response) -> None:
         if response.is_success:
-            if not response.content:
-                return None
-            return response.json()
+            return
         try:
             body: Any = response.json()
         except ValueError:
             body = response.text
         raise ProlificAPIError(response.status_code, body)
+
+    @classmethod
+    def _handle(cls, response: httpx.Response) -> Any:
+        cls._raise_for_error(response)
+        if not response.content:
+            return None
+        return response.json()
 
 
 _default_client: ProlificClient | None = None

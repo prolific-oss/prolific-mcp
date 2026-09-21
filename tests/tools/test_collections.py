@@ -13,6 +13,8 @@ from prolific_mcp.tools.collections import (
     CollectionItem,
     TaskDetails,
     create_collection,
+    export_collection,
+    get_collection_export_status,
     list_collections,
     preview_collection,
     update_collection,
@@ -137,3 +139,54 @@ async def test_preview_collection_raises_when_not_found(installed_client: Prolif
 
     with pytest.raises(ProlificAPIError):
         await preview_collection(collection_id="missing")
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_export_collection_returns_generating_status(
+    installed_client: ProlificClient,
+) -> None:
+    respx.post("https://api.prolific.test/api/v1/data-collection/collections/col_1/export").mock(
+        return_value=httpx.Response(200, json={"status": "generating", "export_id": "exp_1"})
+    )
+
+    result = await export_collection(collection_id="col_1")
+
+    assert result == {"status": "generating", "export_id": "exp_1"}
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_export_collection_returns_cached_complete_status(
+    installed_client: ProlificClient,
+) -> None:
+    respx.post("https://api.prolific.test/api/v1/data-collection/collections/col_1/export").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "status": "complete",
+                "url": "https://example.com/export.zip",
+                "expires_at": "2026-01-01T00:00:00Z",
+            },
+        )
+    )
+
+    result = await export_collection(collection_id="col_1")
+
+    assert result["status"] == "complete"
+    assert result["url"] == "https://example.com/export.zip"
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_get_collection_export_status_hits_poll_endpoint(
+    installed_client: ProlificClient,
+) -> None:
+    route = respx.get(
+        "https://api.prolific.test/api/v1/data-collection/collections/col_1/export/exp_1"
+    ).mock(return_value=httpx.Response(200, json={"status": "complete", "url": "https://x/y.zip"}))
+
+    result = await get_collection_export_status(collection_id="col_1", export_id="exp_1")
+
+    assert route.called
+    assert result["status"] == "complete"

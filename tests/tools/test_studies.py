@@ -9,6 +9,7 @@ from prolific_mcp.tools.studies import (
     CompletionCode,
     StudyDraft,
     create_study,
+    export_study_demographics,
     list_studies,
     publish_study,
     view_study,
@@ -103,3 +104,37 @@ async def test_publish_study_calls_transition(installed_client: ProlificClient) 
     assert result == {"id": "study_1", "status": "ACTIVE"}
     sent = json.loads(route.calls.last.request.content)
     assert sent == {"action": "PUBLISH"}
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_export_study_demographics_defaults_to_empty_filters(
+    installed_client: ProlificClient,
+) -> None:
+    route = respx.post("https://api.prolific.test/api/v1/studies/study_1/demographic-export/").mock(
+        return_value=httpx.Response(200, text="id,age,gender\n1,25,female\n")
+    )
+
+    result = await export_study_demographics(study_id="study_1")
+
+    assert result == "id,age,gender\n1,25,female\n"
+    sent = json.loads(route.calls.last.request.content)
+    assert sent == {"filters": []}
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_export_study_demographics_forwards_filters(
+    installed_client: ProlificClient,
+) -> None:
+    route = respx.post("https://api.prolific.test/api/v1/studies/study_1/demographic-export/").mock(
+        return_value=httpx.Response(200, text="id,age\n1,25\n")
+    )
+
+    await export_study_demographics(
+        study_id="study_1",
+        filters=[{"filter_id": "age", "selected_values": ["25-34"]}],
+    )
+
+    sent = json.loads(route.calls.last.request.content)
+    assert sent == {"filters": [{"filter_id": "age", "selected_values": ["25-34"]}]}
