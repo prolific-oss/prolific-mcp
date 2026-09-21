@@ -26,6 +26,12 @@ Exposes a small set of tools so an LLM can help a researcher design and launch a
 | `view_study` | `GET /api/v1/studies/{id}/` |
 | `create_study` | `POST /api/v1/studies/` |
 | `publish_study` | `POST /api/v1/studies/{id}/transition/` |
+| `pause_study` | `POST /api/v1/studies/{id}/transition/` |
+| `resume_study` | `POST /api/v1/studies/{id}/transition/` |
+| `stop_study` | `POST /api/v1/studies/{id}/transition/` |
+| `list_submissions` | `GET /api/v1/studies/{id}/submissions/` |
+| `get_submission_counts` | `GET /api/v1/studies/{id}/submissions/counts/` |
+| `bulk_approve_submissions` | `POST /api/v1/submissions/bulk-approve/` |
 | `list_collections` | `GET /api/v1/data-collection/collections` |
 | `view_collection` | `GET /api/v1/data-collection/collections/{id}` |
 | `preview_collection` | _(no Prolific endpoint — returns a deterministic app preview URL)_ |

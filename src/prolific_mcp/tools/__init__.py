@@ -8,6 +8,7 @@ from prolific_mcp.tools import (
     filters,
     projects,
     studies,
+    submissions,
     webhooks,
     workspaces,
 )
@@ -20,6 +21,7 @@ __all__ = [
     "filters",
     "projects",
     "studies",
+    "submissions",
     "webhooks",
     "workspaces",
 ]
