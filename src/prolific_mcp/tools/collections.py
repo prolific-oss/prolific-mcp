@@ -55,7 +55,7 @@ class CollectionDraft(CollectionContent):
 
 @experimental_tool()
 async def create_collection(collection: CollectionDraft) -> Any:
-    """Create an AI Task Builder collection.
+    """Create a Task Builder collection.
 
     Collections hold static task content (introduction, steps, and one or
     more pages of instructions) with no attached dataset. Unlike studies,
@@ -113,7 +113,7 @@ async def list_collections(
     limit: Annotated[int, Field(ge=1, le=500, description="Page size.")] = 200,
     offset: Annotated[int, Field(ge=0, description="Pagination offset.")] = 0,
 ) -> Any:
-    """List AI Task Builder collections in a workspace.
+    """List Task Builder collections in a workspace.
 
     Pair with `view_collection` to drill into a specific entry, or
     `update_collection` to replace one in full.
