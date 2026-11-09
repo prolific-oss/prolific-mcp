@@ -153,9 +153,8 @@ async def export_collection(
     The export is generated asynchronously. Returns `{status, export_id, url,
     expires_at}`: `status` is `"generating"` (call `get_collection_export_status`
     with the returned `export_id` to poll) or `"complete"` (a cached export
-    already existed — `url` is ready now). A 403 here usually means AI Task
-    Builder Collections isn't enabled for this account, not an export-specific
-    problem.
+    already existed — `url` is ready now). A 403 here usually means Task Builder
+    Collections isn't enabled for this account, not an export-specific problem.
     """
     return await get_client().post(f"/data-collection/collections/{collection_id}/export")
 
