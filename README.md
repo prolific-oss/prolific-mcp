@@ -60,11 +60,11 @@ Exposes a small set of tools so an LLM can help a researcher design and launch a
 
 ## Quickstart
 
-Install and run from PyPI with [`uv`](https://docs.astral.sh/uv/):
+Install and run with [`uv`](https://docs.astral.sh/uv/):
 
 ```bash
 export PROLIFIC_TOKEN=your_token_here
-uvx prolific-mcp
+uvx --from git+https://github.com/prolific-oss/prolific-mcp prolific-mcp
 ```
 
 Or from a checkout:
@@ -112,7 +112,7 @@ To configure manually instead, add the server to your Claude Desktop config:
   "mcpServers": {
     "prolific": {
       "command": "uvx",
-      "args": ["prolific-mcp"],
+      "args": ["--from", "git+https://github.com/prolific-oss/prolific-mcp", "prolific-mcp"],
       "env": { "PROLIFIC_TOKEN": "your_token_here" }
     }
   }
@@ -124,10 +124,10 @@ To configure manually instead, add the server to your Claude Desktop config:
 ```bash
 claude mcp add prolific \
   -e PROLIFIC_TOKEN=your_token_here \
-  -- uvx prolific-mcp
+  -- uvx --from git+https://github.com/prolific-oss/prolific-mcp prolific-mcp
 ```
 
-To pin a specific version, replace `uvx prolific-mcp` with `uvx prolific-mcp==<version>`.
+To pin a release, append the tag to the repo URL, e.g. `git+https://github.com/prolific-oss/prolific-mcp@v1.0.0`.
 
 ### Codex CLI
 
@@ -136,7 +136,7 @@ Add to `~/.codex/config.toml`:
 ```toml
 [mcp_servers.prolific]
 command = "uvx"
-args = ["prolific-mcp"]
+args = ["--from", "git+https://github.com/prolific-oss/prolific-mcp", "prolific-mcp"]
 env = { PROLIFIC_TOKEN = "your_token_here" }
 ```
 
