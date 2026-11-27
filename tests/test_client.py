@@ -2,7 +2,9 @@ import httpx
 import pytest
 import respx
 
+from prolific_mcp import __version__
 from prolific_mcp.client import ProlificClient
+from prolific_mcp.config import Config
 from prolific_mcp.errors import ProlificAPIError
 
 
@@ -177,3 +179,42 @@ async def test_delete_raises_on_error(client: ProlificClient) -> None:
 
     with pytest.raises(ProlificAPIError):
         await client.delete("/things/1/")
+
+
+@pytest.mark.parametrize(
+    "method", ["get", "post", "patch", "put", "delete", "post_text", "post_with_headers"]
+)
+@respx.mock
+async def test_default_client_sends_client_identity(config: Config, method: str) -> None:
+    http_method = "POST" if method.startswith("post") else method.upper()
+    route = respx.request(http_method, "https://api.prolific.test/api/v1/things/").mock(
+        return_value=httpx.Response(200, json={})
+    )
+    prolific = ProlificClient(config=config)
+    try:
+        await getattr(prolific, method)("/things/")
+    finally:
+        await prolific.aclose()
+
+    sent = route.calls.last.request
+    assert sent.headers["x-prolific-client"] == f"prolific-mcp/{__version__}"
+    assert sent.headers["user-agent"] == "prolific-mcp/0.0.1"
+    assert sent.headers["authorization"] == "Token test-token-123456"
+
+
+@pytest.mark.parametrize("identity", [None, "custom-client/1.2.3"])
+@respx.mock
+async def test_injected_client_gets_default_identity_without_overwriting_override(
+    config: Config, identity: str | None
+) -> None:
+    route = respx.get("https://api.prolific.test/api/v1/things/").mock(
+        return_value=httpx.Response(200, json={})
+    )
+    headers = {"x-prolific-client": identity} if identity is not None else {}
+    async with httpx.AsyncClient(base_url=f"{config.base_url}/api/v1", headers=headers) as injected:
+        prolific = ProlificClient(config=config, client=injected)
+        await prolific.get("/things/")
+
+    assert route.calls.last.request.headers.get("x-prolific-client") == (
+        identity or f"prolific-mcp/{__version__}"
+    )
