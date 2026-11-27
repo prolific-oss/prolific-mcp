@@ -2,6 +2,7 @@ from typing import Any
 
 import httpx
 
+from prolific_mcp import __version__
 from prolific_mcp.config import Config, load_config
 from prolific_mcp.errors import ProlificAPIError
 
@@ -20,6 +21,7 @@ class ProlificClient:
             },
             timeout=30.0,
         )
+        self._client.headers.setdefault("X-Prolific-Client", f"mcp/{__version__}")
 
     @property
     def base_url(self) -> str:
