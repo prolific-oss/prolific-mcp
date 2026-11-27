@@ -197,7 +197,7 @@ async def test_default_client_sends_client_identity(config: Config, method: str)
         await prolific.aclose()
 
     sent = route.calls.last.request
-    assert sent.headers["x-prolific-client"] == f"mcp/{__version__}"
+    assert sent.headers["x-prolific-client"] == f"prolific-mcp/{__version__}"
     assert sent.headers["user-agent"] == "prolific-mcp/0.0.1"
     assert sent.headers["authorization"] == "Token test-token-123456"
 
@@ -216,5 +216,5 @@ async def test_injected_client_gets_default_identity_without_overwriting_overrid
         await prolific.get("/things/")
 
     assert route.calls.last.request.headers.get("x-prolific-client") == (
-        identity or f"mcp/{__version__}"
+        identity or f"prolific-mcp/{__version__}"
     )

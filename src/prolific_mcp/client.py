@@ -21,7 +21,7 @@ class ProlificClient:
             },
             timeout=30.0,
         )
-        self._client.headers.setdefault("X-Prolific-Client", f"mcp/{__version__}")
+        self._client.headers.setdefault("X-Prolific-Client", f"prolific-mcp/{__version__}")
 
     @property
     def base_url(self) -> str:
